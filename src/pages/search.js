@@ -1,7 +1,12 @@
-// Search.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { searchDogs, generateMatch, fetchDogsByIds, logout, searchLocations } from '../api/fetchAPI';
+import {
+  searchDogs,
+  generateMatch,
+  fetchDogsByIds,
+  logout,
+  searchLocations,
+} from '../api/fetchAPI';
 import axios from 'axios';
 
 function Search() {
@@ -11,23 +16,22 @@ function Search() {
   const [breed, setBreed] = useState('');
   const [breeds, setBreeds] = useState([]);
   const [city, setCity] = useState('');
-  const [zipCodes, setZipCodes] = useState([]); // Will store ZIP codes returned by location search
-  const [sortOrder, setSortOrder] = useState('asc'); // "asc" or "desc"
-  const [pageFrom, setPageFrom] = useState(0); // cursor/page offset
+  const [zipCodes, setZipCodes] = useState([]);
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [pageFrom, setPageFrom] = useState(0);
   const pageSize = 25;
 
   // Data and UI states
   const [dogDetails, setDogDetails] = useState([]);
   const [total, setTotal] = useState(0);
   const [nextQuery, setNextQuery] = useState(null);
-  //const [prevQuery, setPrevQuery] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // Favorites and match state
   const [favorites, setFavorites] = useState([]);
   const [matchResult, setMatchResult] = useState(null);
-  const [matchedDog, setMatchedDog] = useState(null); // full details of matched dog
+  const [matchedDog, setMatchedDog] = useState(null);
 
   // Inline styles for a colorful, interactive UI
   const containerStyle = {
@@ -36,7 +40,7 @@ function Search() {
     padding: '2rem',
     background: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
     minHeight: '100vh',
-    fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif'
+    fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
   };
 
   const headerStyle = {
@@ -44,12 +48,12 @@ function Search() {
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '2rem',
-    color: '#333'
+    color: '#333',
   };
 
   const titleStyle = {
     fontSize: '2rem',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   };
 
   const logoutButtonStyle = {
@@ -59,13 +63,13 @@ function Search() {
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
-    transition: 'background-color 0.3s'
+    transition: 'background-color 0.3s',
   };
 
   const inputStyle = {
     padding: '0.5rem',
     borderRadius: '4px',
-    marginRight: '1rem'
+    marginRight: '1rem',
   };
 
   const cardStyle = {
@@ -80,24 +84,24 @@ function Search() {
     flexDirection: 'column',
     alignItems: 'center',
     transition: 'transform 0.3s, box-shadow 0.3s',
-    cursor: 'pointer'
+    cursor: 'pointer',
   };
 
   const cardHoverStyle = {
     transform: 'scale(1.03)',
-    boxShadow: '0 8px 16px rgba(0,0,0,0.3)'
+    boxShadow: '0 8px 16px rgba(0,0,0,0.3)',
   };
 
   const cardImageStyle = {
     maxWidth: '100%',
     borderRadius: '8px',
-    marginBottom: '1rem'
+    marginBottom: '1rem',
   };
 
   const cardsContainerStyle = {
     display: 'flex',
     flexWrap: 'wrap',
-    justifyContent: 'center'
+    justifyContent: 'center',
   };
 
   const buttonStyle = {
@@ -109,12 +113,12 @@ function Search() {
     backgroundColor: '#f76c6c',
     color: '#fff',
     fontWeight: 'bold',
-    transition: 'background-color 0.3s, transform 0.3s'
+    transition: 'background-color 0.3s, transform 0.3s',
   };
 
   const buttonHoverStyle = {
     backgroundColor: '#e85a5a',
-    transform: 'scale(1.05)'
+    transform: 'scale(1.05)',
   };
 
   const [hoveredCard, setHoveredCard] = useState(null);
@@ -122,11 +126,12 @@ function Search() {
 
   // Fetch available breeds on component mount
   useEffect(() => {
-    axios.get('https://frontend-take-home-service.fetch.com/dogs/breeds')
-      .then(response => {
+    axios
+      .get('https://frontend-take-home-service.fetch.com/dogs/breeds')
+      .then((response) => {
         setBreeds(response.data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Failed to fetch breeds:', error);
         setError('Failed to fetch breeds. Please try again.');
       });
@@ -136,10 +141,10 @@ function Search() {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    const filters = { 
-      size: pageSize, 
-      from: pageFrom, 
-      sort: `breed:${sortOrder}` 
+    const filters = {
+      size: pageSize,
+      from: pageFrom,
+      sort: `breed:${sortOrder}`,
     };
     if (breed) {
       filters.breeds = [breed];
@@ -152,10 +157,9 @@ function Search() {
         setDogDetails(dogs);
         setTotal(total);
         setNextQuery(next);
-        setPrevQuery(prev);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Failed to fetch dogs:', err);
         setError('Failed to fetch dogs. Please try again.');
         setLoading(false);
@@ -164,8 +168,8 @@ function Search() {
 
   // Handle favorite toggling for a dog
   const toggleFavorite = (dogId) => {
-    setFavorites(prev => 
-      prev.includes(dogId) ? prev.filter(id => id !== dogId) : [...prev, dogId]
+    setFavorites((prev) =>
+      prev.includes(dogId) ? prev.filter((id) => id !== dogId) : [...prev, dogId]
     );
   };
 
@@ -176,18 +180,21 @@ function Search() {
       return;
     }
     generateMatch(favorites)
-      .then(data => {
+      .then((data) => {
         setMatchResult(data.match);
         // Now fetch full details for the matched dog
         return fetchDogsByIds([data.match]);
       })
-      .then(matchedDogs => {
+      .then((matchedDogs) => {
         if (matchedDogs && matchedDogs.length > 0) {
           setMatchedDog(matchedDogs[0]);
         }
       })
-      .catch(err => {
-        console.error('Failed to generate match or fetch matched dog details:', err);
+      .catch((err) => {
+        console.error(
+          'Failed to generate match or fetch matched dog details:',
+          err
+        );
         setError('Failed to generate match. Please try again.');
       });
   };
@@ -198,7 +205,7 @@ function Search() {
       .then(() => {
         navigate('/'); // Redirect to login page
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Logout failed:', err);
         setError('Logout failed. Please try again.');
       });
@@ -221,13 +228,13 @@ function Search() {
     }
     // Call the location search API with the entered city.
     searchLocations({ city })
-      .then(data => {
+      .then((data) => {
         // Assume the API returns an object with { results: Location[], total }
         // Extract the zip_code from each location.
-        const zips = data.results.map(location => location.zip_code);
+        const zips = data.results.map((location) => location.zip_code);
         setZipCodes(zips);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Failed to search locations:', err);
         setError('Failed to search locations. Please try again.');
       });
@@ -237,33 +244,46 @@ function Search() {
     <div style={containerStyle}>
       <header style={headerStyle}>
         <div style={titleStyle}>Dog Finder</div>
-        <button 
-          style={logoutButtonStyle} 
-          onClick={handleLogout}
-        >
+        <button style={logoutButtonStyle} onClick={handleLogout}>
           Logout
         </button>
       </header>
       <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
         <label>
           <strong>Select Breed: </strong>
-          <select 
-            value={breed} 
-            onChange={e => { setBreed(e.target.value); setPageFrom(0); }}
-            style={{ padding: '0.5rem', borderRadius: '4px', marginRight: '1rem' }}
+          <select
+            value={breed}
+            onChange={(e) => {
+              setBreed(e.target.value);
+              setPageFrom(0);
+            }}
+            style={{
+              padding: '0.5rem',
+              borderRadius: '4px',
+              marginRight: '1rem',
+            }}
           >
             <option value="">Select a breed</option>
             {breeds.map((b, index) => (
-              <option key={index} value={b}>{b}</option>
+              <option key={index} value={b}>
+                {b}
+              </option>
             ))}
           </select>
         </label>
         <label>
           <strong>Sort by Breed: </strong>
-          <select 
-            value={sortOrder} 
-            onChange={e => { setSortOrder(e.target.value); setPageFrom(0); }}
-            style={{ padding: '0.5rem', borderRadius: '4px', marginRight: '1rem' }}
+          <select
+            value={sortOrder}
+            onChange={(e) => {
+              setSortOrder(e.target.value);
+              setPageFrom(0);
+            }}
+            style={{
+              padding: '0.5rem',
+              borderRadius: '4px',
+              marginRight: '1rem',
+            }}
           >
             <option value="asc">Ascending</option>
             <option value="desc">Descending</option>
@@ -273,42 +293,58 @@ function Search() {
       <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
         <label>
           <strong>City: </strong>
-          <input 
+          <input
             type="text"
             value={city}
-            onChange={e => setCity(e.target.value)}
+            onChange={(e) => setCity(e.target.value)}
             placeholder="Enter city"
             style={inputStyle}
           />
         </label>
-        <button 
+        <button
           onClick={applyCityFilter}
           style={{ ...buttonStyle, marginLeft: '0.5rem' }}
         >
           Apply City Filter
         </button>
       </div>
-      {loading && <p style={{ textAlign: 'center', fontSize: '1.2rem' }}>Loading...</p>}
-      {error && <p style={{ color: 'red', textAlign: 'center' }}>Error: {error}</p>}
+      {loading && (
+        <p style={{ textAlign: 'center', fontSize: '1.2rem' }}>Loading...</p>
+      )}
+      {error && (
+        <p style={{ color: 'red', textAlign: 'center' }}>Error: {error}</p>
+      )}
       {(!loading && dogDetails.length > 0) && (
         <>
-          <p style={{ textAlign: 'center', fontWeight: 'bold' }}>Total Results: {total}</p>
+          <p style={{ textAlign: 'center', fontWeight: 'bold' }}>
+            Total Results: {total}
+          </p>
           <div style={cardsContainerStyle}>
             {dogDetails.map((dog) => (
-              <div 
-                key={dog.id} 
+              <div
+                key={dog.id}
                 style={{
                   ...cardStyle,
-                  ...(hoveredCard === dog.id ? cardHoverStyle : {})
+                  ...(hoveredCard === dog.id ? cardHoverStyle : {}),
                 }}
                 onMouseEnter={() => setHoveredCard(dog.id)}
                 onMouseLeave={() => setHoveredCard(null)}
               >
-                {dog.img && <img src={dog.img} alt={dog.name} style={cardImageStyle} />}
-                <p><strong>Name:</strong> {dog.name}</p>
-                <p><strong>Breed:</strong> {dog.breed}</p>
-                <p><strong>Age:</strong> {dog.age}</p>
-                <p><strong>ZIP Code:</strong> {dog.zip_code}</p>
+                {dog.img && (
+                  <img src={dog.img} alt={dog.name} style={cardImageStyle} />
+                )}
+                <p>
+                  <strong>Name:</strong> {dog.name}
+                </p>
+                <p>
+                  <strong>Breed:</strong> {dog.breed}
+                </p>
+                <p>
+                  <strong>Age:</strong> {dog.age}
+                </p>
+                <p>
+                  <strong>ZIP Code:</strong> {dog.zip_code}
+                </p>
                 <label style={{ marginTop: '0.5rem' }}>
                   <input
                     type="checkbox"
@@ -324,7 +360,7 @@ function Search() {
             <button
               style={{
                 ...buttonStyle,
-                ...(hoveredButton === 'prev' ? buttonHoverStyle : {})
+                ...(hoveredButton === 'prev' ? buttonHoverStyle : {}),
               }}
               onMouseEnter={() => setHoveredButton('prev')}
               onMouseLeave={() => setHoveredButton(null)}
@@ -336,7 +372,7 @@ function Search() {
             <button
               style={{
                 ...buttonStyle,
-                ...(hoveredButton === 'next' ? buttonHoverStyle : {})
+                ...(hoveredButton === 'next' ? buttonHoverStyle : {}),
               }}
               onMouseEnter={() => setHoveredButton('next')}
               onMouseLeave={() => setHoveredButton(null)}
@@ -354,7 +390,7 @@ function Search() {
             ...buttonStyle,
             padding: '1rem 2rem',
             fontSize: '1rem',
-            backgroundColor: '#6c63ff'
+            backgroundColor: '#6c63ff',
           }}
           onClick={handleGenerateMatch}
         >
@@ -368,21 +404,36 @@ function Search() {
           </div>
         )}
         {matchedDog && (
-          <div style={{ 
-              marginTop: '1rem', 
-              border: '3px solid #6c63ff', 
-              padding: '1rem', 
-              borderRadius: '12px', 
+          <div
+            style={{
+              marginTop: '1rem',
+              border: '3px solid #6c63ff',
+              padding: '1rem',
+              borderRadius: '12px',
               display: 'inline-block',
-              backgroundColor: '#fff'
+              backgroundColor: '#fff',
             }}
           >
             <h2>Your Match</h2>
-            {matchedDog.img && <img src={matchedDog.img} alt={matchedDog.name} style={{ maxWidth: '200px', borderRadius: '8px' }} />}
-            <p><strong>Name:</strong> {matchedDog.name}</p>
-            <p><strong>Breed:</strong> {matchedDog.breed}</p>
-            <p><strong>Age:</strong> {matchedDog.age}</p>
-            <p><strong>ZIP Code:</strong> {matchedDog.zip_code}</p>
+            {matchedDog.img && (
+              <img
+                src={matchedDog.img}
+                alt={matchedDog.name}
+                style={{ maxWidth: '200px', borderRadius: '8px' }}
+              />
+            )}
+            <p>
+              <strong>Name:</strong> {matchedDog.name}
+            </p>
+            <p>
+              <strong>Breed:</strong> {matchedDog.breed}
+            </p>
+            <p>
+              <strong>Age:</strong> {matchedDog.age}
+            </p>
+            <p>
+              <strong>ZIP Code:</strong> {matchedDog.zip_code}
+            </p>
           </div>
         )}
       </div>
