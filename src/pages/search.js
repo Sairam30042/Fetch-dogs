@@ -1,7 +1,7 @@
 // Search.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { searchDogs, generateMatch, fetchDogsByIds, logout } from '../api/fetchAPI';
+import { searchDogs, generateMatch, fetchDogsByIds, logout, searchLocations } from '../api/fetchAPI';
 import axios from 'axios';
 
 function Search() {
@@ -10,6 +10,8 @@ function Search() {
   // Filter and pagination states
   const [breed, setBreed] = useState('');
   const [breeds, setBreeds] = useState([]);
+  const [city, setCity] = useState('');
+  const [zipCodes, setZipCodes] = useState([]); // Will store ZIP codes returned by location search
   const [sortOrder, setSortOrder] = useState('asc'); // "asc" or "desc"
   const [pageFrom, setPageFrom] = useState(0); // cursor/page offset
   const pageSize = 25;
@@ -58,6 +60,12 @@ function Search() {
     borderRadius: '8px',
     cursor: 'pointer',
     transition: 'background-color 0.3s'
+  };
+
+  const inputStyle = {
+    padding: '0.5rem',
+    borderRadius: '4px',
+    marginRight: '1rem'
   };
 
   const cardStyle = {
@@ -124,12 +132,10 @@ function Search() {
       });
   }, []);
 
-  // Fetch dogs whenever breed, pageFrom, or sortOrder changes
+  // Fetch dogs whenever filters change (breed, zipCodes, pageFrom, or sortOrder)
   useEffect(() => {
     setLoading(true);
     setError(null);
-    // Build filters: always include sort, size, and from.
-    // If a breed is selected, include it; otherwise, fetch all dogs sorted.
     const filters = { 
       size: pageSize, 
       from: pageFrom, 
@@ -137,6 +143,9 @@ function Search() {
     };
     if (breed) {
       filters.breeds = [breed];
+    }
+    if (zipCodes.length > 0) {
+      filters.zipCodes = zipCodes;
     }
     searchDogs(filters)
       .then(({ dogs, total, next, prev }) => {
@@ -147,11 +156,11 @@ function Search() {
         setLoading(false);
       })
       .catch(err => {
-        console.error(`Failed to fetch dogs:`, err);
-        setError(`Failed to fetch dogs. Please try again.`);
+        console.error('Failed to fetch dogs:', err);
+        setError('Failed to fetch dogs. Please try again.');
         setLoading(false);
       });
-  }, [breed, pageFrom, sortOrder]);
+  }, [breed, zipCodes, pageFrom, sortOrder]);
 
   // Handle favorite toggling for a dog
   const toggleFavorite = (dogId) => {
@@ -204,6 +213,26 @@ function Search() {
     setPageFrom(Math.max(0, pageFrom - pageSize));
   };
 
+  // Handle city filter: call searchLocations and update zipCodes state.
+  const applyCityFilter = () => {
+    if (!city.trim()) {
+      setZipCodes([]);
+      return;
+    }
+    // Call the location search API with the entered city.
+    searchLocations({ city })
+      .then(data => {
+        // Assume the API returns an object with { results: Location[], total }
+        // Extract the zip_code from each location.
+        const zips = data.results.map(location => location.zip_code);
+        setZipCodes(zips);
+      })
+      .catch(err => {
+        console.error('Failed to search locations:', err);
+        setError('Failed to search locations. Please try again.');
+      });
+  };
+
   return (
     <div style={containerStyle}>
       <header style={headerStyle}>
@@ -234,12 +263,30 @@ function Search() {
           <select 
             value={sortOrder} 
             onChange={e => { setSortOrder(e.target.value); setPageFrom(0); }}
-            style={{ padding: '0.5rem', borderRadius: '4px' }}
+            style={{ padding: '0.5rem', borderRadius: '4px', marginRight: '1rem' }}
           >
             <option value="asc">Ascending</option>
             <option value="desc">Descending</option>
           </select>
         </label>
+      </div>
+      <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+        <label>
+          <strong>City: </strong>
+          <input 
+            type="text"
+            value={city}
+            onChange={e => setCity(e.target.value)}
+            placeholder="Enter city"
+            style={inputStyle}
+          />
+        </label>
+        <button 
+          onClick={applyCityFilter}
+          style={{ ...buttonStyle, marginLeft: '0.5rem' }}
+        >
+          Apply City Filter
+        </button>
       </div>
       {loading && <p style={{ textAlign: 'center', fontSize: '1.2rem' }}>Loading...</p>}
       {error && <p style={{ color: 'red', textAlign: 'center' }}>Error: {error}</p>}
