@@ -20,7 +20,7 @@ function Search() {
   const [dogDetails, setDogDetails] = useState([]);
   const [total, setTotal] = useState(0);
   const [nextQuery, setNextQuery] = useState(null);
-  const [prevQuery, setPrevQuery] = useState(null);
+  //const [prevQuery, setPrevQuery] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
