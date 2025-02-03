@@ -13,8 +13,7 @@ Dog Finder is a React-based front-end application designed to help dog enthusias
 - [Project Structure](#project-structure)
 - [API Reference](#api-reference)
 - [Future Improvements](#future-improvements)
-- [License](#license)
-
+  
 ## Features
 
 - **User Authentication:**  
@@ -34,7 +33,7 @@ Dog Finder is a React-based front-end application designed to help dog enthusias
 1. **Clone the Repository:**
 
    ```bash
-   git clone 
+   git clone https://github.com/Sairam30042/Fetch-dogs.git
    cd dog-finder
 
 - **2.Install Dependencies:**  
@@ -42,29 +41,14 @@ Dog Finder is a React-based front-end application designed to help dog enthusias
 
 Use npm:
 
-bash
-Copy
 npm install
-Or Yarn:
-
-bash
-Copy
-yarn install
 
 - **Usage:**  
 
 Start the Application Locally:
 
-With npm:
-
-bash
-Copy
 npm start
-With Yarn:
 
-bash
-Copy
-yarn start
 Access the Application:
 
 Open your browser and navigate to http://localhost:3000.
@@ -74,21 +58,17 @@ Login and Explore:
 On the login page, enter your name and email, then click Login.
 On the search page, select a dog breed, adjust the sort order if desired, navigate through the results, and mark your favorites.
 Click Generate Match from Favorites to see the matched dog's details.
+
 - **Testing:**  
 
 The project uses Jest and React Testing Library for testing.
 
 To run tests, execute:
 
-bash
-Copy
 npm test
-or
 
-bash
-Copy
-yarn test
 Tests simulate user interactions (login, search, favoriting, and match generation) and use mocked API calls to verify component behavior.
+
 - **Project Structure:**  
 
 A brief overview of the main folders and files:
@@ -139,8 +119,6 @@ Future Improvements
 Enhanced Error Handling:
 Integrate error boundaries and provide user-friendly error messages.
 
-Location-Based Search:
-Expand search capabilities using location data.
 
 User Profile Management:
 Enable users to view and manage their favorite dogs and search history.
