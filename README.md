@@ -43,7 +43,9 @@ Use npm:
 
 npm install
 
-##Usage
+- **Usage:**
+
+## Usage
 
 Start the Application Locally:
 
