@@ -43,7 +43,6 @@ Use npm:
 
 npm install
 
-- **Usage:**
 
 ## Usage
 
@@ -61,7 +60,8 @@ On the login page, enter your name and email, then click Login.
 On the search page, select a dog breed, adjust the sort order if desired, navigate through the results, and mark your favorites.
 Click Generate Match from Favorites to see the matched dog's details.
 
-- **Testing:**  
+
+## Testing
 
 The project uses Jest and React Testing Library for testing.
 
@@ -71,7 +71,7 @@ npm test
 
 Tests simulate user interactions (login, search, favoriting, and match generation) and use mocked API calls to verify component behavior.
 
-- **Project Structure:**  
+## Project Structure
 
 A brief overview of the main folders and files:
 
@@ -86,7 +86,7 @@ components/
 App.js – Main application component that sets up routing.
 setupTests.js – Configuration for testing.
 
-- **API Reference:**  
+## API Reference 
 
 The backend API endpoints used in the project include:
 
@@ -117,14 +117,14 @@ POST /dogs/match
 Request body: Array of favorite dog IDs.
 Returns an object with the matched dog’s ID.
 
-Future Improvements
+## Future Improvements
 Enhanced Error Handling:
 Integrate error boundaries and provide user-friendly error messages.
 
 
-User Profile Management:
+## User Profile Management:
 Enable users to view and manage their favorite dogs and search history.
 
-UI Enhancements:
+## UI Enhancements:
 Further improve design and responsiveness for different devices.
 
