@@ -1,4 +1,4 @@
-name: Deploy React App to GitHub Pages
+name: Deploy React App to GitHub Pages (Custom Deploy)
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '16'  # Adjust if needed
 
       - name: Install Dependencies
         run: npm install
@@ -28,8 +28,26 @@ jobs:
       - name: Build React App
         run: npm run build
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.TOKEN }}
-          publish_dir: build
+      - name: Deploy to GitHub Pages (Custom)
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        run: |
+          # Configure git with the GitHub Actions bot identity
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+          # Create a temporary deployment folder and copy the build output
+          mkdir deploy
+          cp -R build/* deploy/
+
+          cd deploy
+          git init
+          git checkout -b gh-pages
+          git add .
+          git commit -m "Deploy to GitHub Pages"
+
+          # Set the remote URL exactly as desired (without .git)
+          git remote add origin https://github.com/Sairam30042/Fetch-dogs/
+          
+          # Force push the gh-pages branch to the remote repository
+          git push --force origin gh-pages
