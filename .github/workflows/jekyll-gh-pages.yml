@@ -8,10 +8,9 @@ on:
 permissions:
   contents: read
   pages: write
-  id-token: write
 
 jobs:
-  build_and_deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -20,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'  # Adjust if necessary
+          node-version: '16'  # Use the Node.js version your project requires
 
       - name: Install Dependencies
         run: npm install
@@ -28,12 +27,8 @@ jobs:
       - name: Build React App
         run: npm run build
 
-      - name: Prepare _site folder for deployment
-        run: |
-          mkdir _site
-          cp -R build/* _site
-
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          publish_dir: _site
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: build
